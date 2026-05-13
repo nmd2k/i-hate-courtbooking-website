@@ -88,8 +88,14 @@ function getAntiForgeryToken() {
 
 function getPageIds() {
   const url = new URL(location.href);
+  const facilityId = url.searchParams.get('facilityId') || '5dd9d9de-c567-472f-8f92-c0b0040fce0b';
+  const mapId = url.searchParams.get('mapId')
+    || (facilityId === '5dd9d9de-c567-472f-8f92-c0b0040fce0b'
+      ? '7d8b8d20-b7cf-43ac-8167-0738142baff3'
+      : facilityId);
   return {
-    facilityId: url.searchParams.get('facilityId') || '5dd9d9de-c567-472f-8f92-c0b0040fce0b',
+    facilityId,
+    mapId,
     widgetId: url.searchParams.get('widgetId') || '15f6af07-39c5-473e-b053-96653f77a406',
     calendarId: url.searchParams.get('calendarId') || 'bce15730-1f38-4e5c-889c-856322a7f877',
   };
@@ -148,7 +154,7 @@ async function fetchFacilityList() {
   body.set('ShouldCheckAvailability', 'false');
   body.set('calendarId', ids.calendarId);
   body.set('widgetId', ids.widgetId);
-  body.set('mapId', ids.facilityId === '5dd9d9de-c567-472f-8f92-c0b0040fce0b' ? '7d8b8d20-b7cf-43ac-8167-0738142baff3' : ids.facilityId);
+  body.set('mapId', ids.mapId);
   body.set('filtersLoaded', 'true');
   body.set('__RequestVerificationToken', token || '');
 
@@ -237,12 +243,24 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
         })
       );
 
+      const ids = getPageIds();
       const courts = availabilityByFacility.map((facility) => ({
         court: facility.name,
+        facilityId: facility.id,
         slots: facility.slots,
       }));
 
-      sendResponse({ ok: true, results: { date: selectedDate, courts } });
+      sendResponse({
+        ok: true,
+        results: {
+          date: selectedDate,
+          siteOrigin: location.origin,
+          mapId: ids.mapId,
+          widgetId: ids.widgetId,
+          calendarId: ids.calendarId,
+          courts,
+        },
+      });
     } catch (error) {
       sendResponse({ ok: false, error: error.message || 'Failed to fetch availability.' });
     }

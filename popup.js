@@ -1,4 +1,4 @@
-import { minutesToLabel } from './lib/availability.js';
+import { dateInputToApiIso, minutesToLabel } from './lib/availability.js';
 
 const form = document.getElementById('search-form');
 const statusEl = document.getElementById('status');
@@ -125,13 +125,40 @@ function renderResults(results) {
   }
 }
 
-function buildMatrix(results, startTime, endTime, stepMinutes) {
+function buildMapUrl(ctx) {
+  const u = new URL('/32617/Clients/BookMe4FacilityMap/Map', ctx.siteOrigin);
+  u.searchParams.set('mapId', ctx.mapId);
+  u.searchParams.set('widgetId', ctx.widgetId);
+  u.searchParams.set('calendarId', ctx.calendarId);
+  return u.href;
+}
+
+/** Per-facility booking flow (Map ignores facilityId for deep selection on many tenants). */
+function buildBookingFacilityUrl(ctx, facilityId, selectedDate) {
+  const u = new URL('/32617/Clients/BookMe4LandingPages/Facility', ctx.siteOrigin);
+  u.searchParams.set('facilityId', facilityId);
+  u.searchParams.set('arrivalDate', dateInputToApiIso(selectedDate));
+  u.searchParams.set('calendarId', ctx.calendarId);
+  u.searchParams.set('widgetId', ctx.widgetId);
+  u.searchParams.set('landingPageBackUrl', buildMapUrl(ctx));
+  return u.href;
+}
+
+function buildMatrix(results, startTime, endTime, stepMinutes, statusHost) {
   const start = valueToMinutes(startTime);
   const end = valueToMinutes(endTime);
   const times = [];
   for (let t = start; t < end; t += stepMinutes) times.push(t);
 
-  const courts = results.courts.map((court) => court.court).sort();
+  const ctx = {
+    siteOrigin: results.siteOrigin,
+    mapId: results.mapId,
+    widgetId: results.widgetId,
+    calendarId: results.calendarId,
+  };
+  const canOpenBooking = Boolean(ctx.siteOrigin && ctx.mapId && ctx.widgetId && ctx.calendarId);
+
+  const courts = results.courts.map((c) => c.court).sort();
   const table = document.createElement('div');
   table.className = 'matrix';
 
@@ -149,11 +176,40 @@ function buildMatrix(results, startTime, endTime, stepMinutes) {
     row.appendChild(timeCell);
 
     for (const court of courts) {
-      const available = results.courts.find((item) => item.court === court)?.slots.some((slot) => time >= slot.start && time < slot.start + slot.duration && slot.open);
+      const courtRow = results.courts.find((item) => item.court === court);
+      const available = courtRow?.slots?.some((slot) => time >= slot.start && time < slot.start + slot.duration && slot.open);
 
       const cell = document.createElement('div');
       cell.className = `cell ${available ? 'open' : 'closed'}`;
-      cell.title = court;
+      const timeLabel = minutesToLabel(time);
+      cell.title = `${court} · ${timeLabel}`;
+
+      const facilityId = courtRow?.facilityId;
+      if (canOpenBooking && facilityId) {
+        cell.classList.add('cell-clickable');
+        cell.tabIndex = 0;
+        cell.setAttribute('role', 'button');
+        const label = available ? 'Open booking for this court' : 'Open facility booking page';
+        cell.title = `${court} · ${timeLabel} — ${label}`;
+        const openBooking = () => {
+          const url = buildBookingFacilityUrl(ctx, facilityId, results.date);
+          chrome.tabs.create({ url, active: false }, () => {
+            if (chrome.runtime.lastError) {
+              statusHost.textContent = chrome.runtime.lastError.message;
+              return;
+            }
+            statusHost.textContent = 'Opened booking in a new background tab (check your tab bar).';
+          });
+        };
+        cell.addEventListener('click', openBooking);
+        cell.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            openBooking();
+          }
+        });
+      }
+
       row.appendChild(cell);
     }
 
@@ -204,7 +260,7 @@ function init() {
       } else {
         statusEl.textContent = `Loaded ${response.results.courts.length} court(s).`;
       }
-      resultsEl.replaceChildren(buildMatrix(response.results, payload.startTime, payload.endTime, payload.stepMinutes));
+      resultsEl.replaceChildren(buildMatrix(response.results, payload.startTime, payload.endTime, payload.stepMinutes, statusEl));
     } catch (error) {
       statusEl.textContent = error.message || 'Search failed.';
     }
