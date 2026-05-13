@@ -11,7 +11,9 @@ You do **not** need to be logged in if the booking view is already visible in yo
 1. Open Chrome and go to `chrome://extensions`.
 2. Turn on **Developer mode** (top right).
 3. Click **Load unpacked**.
-4. Choose this project folder (`book-court`), or the folder you get after unzipping a release asset.
+4. Choose this project folder (`book-court`), or download [`court-finder-perfectmind-v0.1.4.zip`](https://github.com/nmd2k/i-hate-courtbooking-website/raw/main/releases/court-finder-perfectmind-v0.1.4.zip), unzip it, and choose the unzipped folder.
+
+Release tags and optional GitHub Release notes live at [Releases](https://github.com/nmd2k/i-hate-courtbooking-website/releases).
 
 After you change any extension files, open `chrome://extensions` again and click **Reload** on this extension.
 
