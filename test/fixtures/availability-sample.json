@@ -1,0 +1,24 @@
+{
+  "availabilities": [
+    {
+      "Date": "/Date(1778673600000)/",
+      "BookingGroups": [
+        {
+          "Name": "Court East A",
+          "AvailableSpots": [
+            {
+              "Time": { "TotalMinutes": 540 },
+              "Duration": { "TotalMinutes": 30 },
+              "IsDisabled": false
+            },
+            {
+              "Time": { "TotalMinutes": 570 },
+              "Duration": { "TotalMinutes": 30 },
+              "IsDisabled": true
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

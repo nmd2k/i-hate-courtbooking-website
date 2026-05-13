@@ -1,0 +1,19 @@
+{
+  "availabilities": [
+    {
+      "Date": "2026-05-13T00:00:00",
+      "BookingGroups": [
+        {
+          "Name": "East A",
+          "AvailableSpots": [
+            {
+              "Time": { "TotalMinutes": 600 },
+              "Duration": { "TotalMinutes": 30 },
+              "IsDisabled": false
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Court Finder</title>
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body>
+    <main class="app">
+      <h1>Court Finder</h1>
+      <form id="search-form" class="form">
+        <label>
+          Date
+          <input id="date" type="date" required />
+        </label>
+        <label>
+          Start time
+          <select id="start-time" required></select>
+        </label>
+        <label>
+          End time
+          <select id="end-time" required></select>
+        </label>
+        <button type="submit">Search on current page</button>
+      </form>
+
+      <section>
+        <div id="status" class="status">Open the booking page, then search.</div>
+        <div id="results" class="results"></div>
+      </section>
+    </main>
+    <script type="module" src="popup.js"></script>
+  </body>
+</html>

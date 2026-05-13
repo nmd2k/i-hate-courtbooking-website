@@ -1,0 +1,139 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f6f7fb;
+  color: #1f2937;
+  width: 380px;
+}
+
+.app {
+  padding: 14px;
+}
+
+h1 {
+  margin: 0 0 12px;
+  font-size: 18px;
+}
+
+.form {
+  display: grid;
+  gap: 10px;
+}
+
+label {
+  display: grid;
+  gap: 4px;
+  font-size: 13px;
+}
+
+input,
+button,
+select {
+  font: inherit;
+  padding: 8px 10px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+}
+
+button {
+  background: #2563eb;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.status {
+  margin: 12px 0;
+  font-size: 13px;
+  color: #475569;
+}
+
+.results {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 8px;
+}
+
+option {
+  font: inherit;
+}
+
+.result {
+  padding: 10px;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  background: white;
+}
+
+.matrix {
+  display: grid;
+  gap: 8px;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 52px repeat(8, minmax(0, 1fr));
+  gap: 4px;
+  align-items: stretch;
+}
+
+.cell,
+.header-cell {
+  padding: 4px 2px;
+  border-radius: 8px;
+  text-align: center;
+  font-size: 11px;
+}
+
+.header-cell {
+  background: #0f172a;
+  color: #fff;
+  font-weight: 700;
+}
+
+.time-cell {
+  background: #e2e8f0;
+  font-weight: 700;
+}
+
+.court-head,
+.time-head {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.court-head {
+  font-size: 10px;
+}
+
+.time-head {
+  font-size: 10px;
+}
+
+.open {
+  background: #dcfce7;
+  border: 1px solid #86efac;
+}
+
+.closed {
+  background: #fee2e2;
+  border: 1px solid #fca5a5;
+}
+
+.open,
+.closed {
+  min-height: 20px;
+}
+
+.result strong {
+  display: block;
+  margin-bottom: 4px;
+}
+
+.muted {
+  color: #64748b;
+  font-size: 12px;
+}
